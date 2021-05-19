@@ -250,7 +250,7 @@ def _import_helper(file_path):
     """Helps import connections from a file"""
     connections_dict = load_connections_dict(file_path)
     with create_session() as session:
-        for conn_id, conn_values in connections_dict.items():
+        for conn_id, connection in connections_dict.items():
             if session.query(Connection).filter(Connection.conn_id == conn_id).first():
                 print(f'Could not import connection {conn_id}: connection already exists.')
                 continue
@@ -268,10 +268,6 @@ def _import_helper(file_path):
                 'uri',
                 'extra_dejson',
             ]
-            filtered_connection_values = {
-                key: value for key, value in conn_values.items() if key in allowed_fields
-            }
-            connection = _create_connection(conn_id, filtered_connection_values)
             session.add(connection)
             session.commit()
             print(f'Imported connection {conn_id}')
